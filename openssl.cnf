@@ -1,0 +1,95 @@
+####################################################################
+[ ca ]
+default_ca = CA_default               # The default ca section
+
+####################################################################
+
+[ CA_default ]
+
+dir  = ./demoCA                            # Where everything is kept
+certs  = $dir/certs                        # Where the issued certs are kept
+crl_dir  = $dir/crl                        # Where the issued crl are kept
+database = $dir/index.txt                  # database index file.
+new_certs_dir = $dir/newcerts              # default place for new certs.
+
+certificate = $dir/cacert.pem              # The CA certificate
+x509_extensions = usr_cert                 # The extentions to add to the cert
+
+policy  = policy_match
+####################################################################
+
+# For the CA policy
+
+[ policy_match ]
+countryName  = match
+stateOrProvinceName = match
+organizationName = match
+organizationalUnitName = optional
+commonName  = supplied
+emailAddress  = optional
+
+# For the 'anything' policy.  At this point in time, you must list all acceptable 'object' types.
+
+[ policy_anything ]
+countryName  = optional
+stateOrProvinceName = optional
+localityName  = optional
+organizationName = optional
+organizationalUnitName = optional
+commonName  = supplied
+emailAddress  = optional
+
+####################################################################
+[ req ]
+default_bits  = 2048
+default_keyfile  = privkey.pem
+distinguished_name = req_distinguished_name
+attributes  = req_attributes
+x509_extensions = v3_ca                            # The extentions to add to the self signed cert
+req_extensions = v3_req                            # The extensions to add to a certificate request
+
+####################################################################
+
+[ req_distinguished_name ]
+
+[ v3_ca ]
+
+[ usr_cert ]
+# These extensions are added when 'ca' signs a request.
+basicConstraints=CA:TRUE
+
+# For normal client use this is typical nsCertType = client, email and for everything including object signing:
+nsCertType = client, server, email, objsign
+
+# This is typical in keyUsage for a client certificate.
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+
+# This will be displayed in Netscape's comment listbox.
+nsComment   = "OpenSSL Generated Certificate"
+
+# PKIX recommendations harmless if included in all certificates.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer:always
+
+# This stuff is for subjectAltName and issuerAltname.
+subjectAltName = @alt_names
+
+[alt_names]
+ #You can use either of the two alternative names or both.
+DNS.1 =
+IP.1 =
+
+####################################################################
+
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:TRUE
+extendedKeyUsage=serverAuth, clientAuth
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+subjectKeyIdentifier=hash
+
+####################################################################
